@@ -1,0 +1,273 @@
+/* src/styles/GameBoyShell.css */
+
+.gb {  
+  background: var(--gameboy-bg, #d0cec6);
+  position: relative;
+  width: 360px;
+  height: 640px;
+  margin: 200px auto 0;
+  transform: scale(1.5);
+  transform-origin: center;
+  background: #d0cec6;
+  border: 8px solid #777;
+  border-radius: 16px;
+  box-shadow:
+    inset -4px -4px 0 #aaa,
+    inset 4px 4px 0 #555;
+}
+
+.gb-top-bar {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  height: 32px;
+  background: linear-gradient(to right, #444, #666, #444);
+  border-radius: 8px;
+}
+
+.gb-screen {
+  background: var(--screen-bg, #d8f7e7);
+  position: absolute;
+  top: 56px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 264px;
+  height: 350px;
+  background: #d8f7e7;
+  border: 4px solid #444444;
+  border-radius: 4px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.gb-label {
+  position: absolute;
+  top: 415px;
+  width: 100%;
+  text-align: center;
+  font: bold 16px Arial, sans-serif;
+  color: #225;
+  z-index: 2;
+}
+
+/* D-Pad graphic */
+.gb-dpad {
+  position: absolute;
+  top: 450px;
+  left: 48px;
+  width: 80px;
+  height: 80px;
+  z-index: 2;
+}
+
+.gb-dpad-vertical,
+.gb-dpad-horizontal {
+  position: absolute;
+  background: #555;
+  border-radius: 4px;
+}
+
+.gb-dpad-vertical {
+  top: 0;
+  left: 28px;
+  width: 24px;
+  height: 80px;
+}
+
+.gb-dpad-horizontal {
+  top: 28px;
+  left: 0;
+  width: 80px;
+  height: 24px;
+}
+
+/* D-Pad hit zones */
+.gb-dpad-up {
+  transition: filter 0.1s, transform 0.1s;
+  position: absolute;
+  top: 0;
+  left: 32px;
+  width: 16px;
+  height: 32px;
+  cursor: pointer;
+}
+
+.gb-dpad-down {
+  transition: filter 0.1s, transform 0.1s;
+  position: absolute;
+  bottom: 0;
+  left: 32px;
+  width: 16px;
+  height: 32px;
+  touch-action: none;
+  cursor: pointer;
+}
+
+.gb-dpad-left {
+  transition: filter 0.1s, transform 0.1s;
+  position: absolute;
+  top: 32px;
+  left: 0;
+  width: 32px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.gb-dpad-right {
+  transition: filter 0.1s, transform 0.1s;
+  position: absolute;
+  top: 32px;
+  right: 0;
+  width: 32px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* A & B buttons */
+.gb-buttons {
+  position: absolute;
+  top: 480px;
+  right: 56px;
+  display: flex;
+  gap: 24px;
+  z-index: 2;
+}
+
+.gb-btn-container {
+  position: relative;
+  width: 40px;
+  /* inclut border */
+  height: 40px;
+  /* inclut border */
+}
+
+.gb-btn {
+  transition: filter 0.1s, transform 0.1s;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  border: 4px solid #800;
+  border-radius: 50%;
+  background: #c33;
+  /* ou #a22 selon A/B */
+  cursor: pointer;
+}
+
+.gb-btn-a {
+  background: #c33;
+}
+
+.gb-btn-b {
+  background: #a22;
+}
+
+.gb-btn-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: bold 12px Arial, sans-serif;
+  color: #222;
+  pointer-events: none;
+}
+
+/* SELECT & START */
+.gb-select-start {
+  position: absolute;
+  top: 550px;
+  left: 100px;
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  z-index: 2;
+}
+
+.gb-select-container {
+  position: relative;
+  width: 48px;
+  height: 12px;
+}
+
+.gb-small-btn {
+  transition: filter 0.1s, transform 0.1s;
+  width: 100%;
+  height: 100%;
+  background: #bbb;
+  border: 2px solid #888;
+  border-radius: 6px;
+  cursor: pointer;
+  transform: rotate(-25deg);
+  transform-origin: center center;
+}
+
+.gb-select-label,
+.gb-start-label {
+  position: absolute;
+  top: 20px;
+  left: 70%;
+  transform: translateX(-50%) rotate(-25deg);
+  font: 10px Arial, sans-serif;
+  color: #333;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Speaker holes */
+.gb-speaker {
+  position: absolute;
+  bottom: 32px;
+  right: 48px;
+  display: grid;
+  grid-template-columns: repeat(5, 8px);
+  grid-gap: 4px;
+  z-index: 2;
+}
+
+.gb-speaker-hole {
+  width: 8px;
+  height: 24px;
+  background: #555;
+  border-radius: 4px;
+}
+
+.gb-btn:active,
+.gb-small-btn:active,
+.gb-dpad-up:active,
+.gb-dpad-down:active,
+.gb-dpad-left:active,
+.gb-dpad-right:active {
+  filter: brightness(0.8);
+  transform: scale(0.95);
+}
+
+.gb-btn:focus,
+.gb-small-btn:focus,
+.gb-dpad-up:focus,
+.gb-dpad-down:focus,
+.gb-dpad-left:focus,
+.gb-dpad-right:focus {
+  outline: 2px solid #44f;
+  outline-offset: 2px;
+}
+
+
+@media (max-width: 500px), (max-height: 720px) {
+  .gb {
+    width: 98vw;
+    height: 65vw;
+    min-width: 220px;
+    min-height: 350px;
+    max-width: 100vw;
+    max-height: 100vw;
+    margin: 24px auto 0;
+    transform: scale(1);
+  }
+  .gb-screen {
+    width: 68vw;
+    height: 40vw;
+    min-width: 140px;
+    min-height: 120px;
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "tretris_massa_bot",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node --loader ts-node/esm bot.ts"
+  },
+  "dependencies": {
+    "@massalabs/massa-web3": "^1.0.0",
+    "dotenv": "^16.0.0",
+    "node-telegram-bot-api": "^0.61.0"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.0"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "wallet_password": "Manste2506$",
+  "wallet_path": "wallet.yaml",
+  "node_url": "https://buildnet.massa.net/api/v2:33035",
+  "chunk_size": 64000,
+  "metadatas": {
+    "TITLE": "Tetris on Massa",
+    "DESCRIPTION": "Game Boy style Tetris deployed on Massa DeWeb"
+  }
+}
