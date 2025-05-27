@@ -1,18 +1,27 @@
 import 'dotenv/config';
 import TelegramBot from 'node-telegram-bot-api';
 import { Args, PublicAPI } from '@massalabs/massa-web3';
+import fs from 'fs';
 
+const logFile = './logs/bot.log';
 const CALLER_ADDRESS = process.env.CALLER_ADDRESS as string;
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS as string;
 const ALERT_CHAT_ID = process.env.ALERT_CHAT_ID || '';
 
 const client = new PublicAPI('https://buildnet.massa.net/api/v2');
 const bot = new TelegramBot(process.env.TELEGRAM_TOKEN as string, { polling: true });
+log('🤖 Bot lancé');
+
 
 let previousTop10 = '';
 let previousChampion = '';
 let previousCagnotte = BigInt(0);
 let alertsEnabled = true;
+
+function log(msg: string) {
+  const line = `[${new Date().toISOString()}] ${msg}\n`;
+  fs.appendFileSync(logFile, line);
+}
 
 function formatTop10(data: any[]): string {
   return data.map((entry: any, i: number) =>
@@ -38,6 +47,7 @@ async function checkAlerts() {
       const topParsed = JSON.parse(topJson);
       const formatted = formatTop10(topParsed);
       bot.sendMessage(ALERT_CHAT_ID, `🚨 *Top 10 mis à jour !*\n\n${formatted}`, { parse_mode: 'Markdown' });
+      log('🚨 Top 10 modifié');
     }
 
     const champRes = await client.executeReadOnlyCall({
@@ -52,6 +62,7 @@ async function checkAlerts() {
       const champ = JSON.parse(champJson)[0];
       if (champ && champ.score > 0) {
         bot.sendMessage(ALERT_CHAT_ID, `👑 *Nouveau champion !* ${champ.pseudo} avec ${champ.score} pts (niveau ${champ.level})`, { parse_mode: 'Markdown' });
+        log(`👑 Nouveau champion : ${champ.pseudo} (${champ.score})`);
       }
     }
 
@@ -66,6 +77,7 @@ async function checkAlerts() {
       previousCagnotte = currentCagnotte;
       const mas = Number(currentCagnotte) / 1e9;
       bot.sendMessage(ALERT_CHAT_ID, `💰 *Cagnotte mise à jour* : ${mas} MAS`, { parse_mode: 'Markdown' });
+      log(`💰 Nouvelle cagnotte : ${mas} MAS`);
     }
   } catch (err) {
     console.error('Erreur surveillance automatique :', err);
@@ -75,12 +87,14 @@ async function checkAlerts() {
 setInterval(checkAlerts, 5 * 60 * 1000);
 
 bot.onText(/\/alerts (on|off)/, (msg, match) => {
+  log(`📬 /alerts de ${msg.from?.username || msg.chat.id}`);
   const state = match?.[1];
   alertsEnabled = state === 'on';
   bot.sendMessage(msg.chat.id, `🔔 Alertes ${alertsEnabled ? '*activées*' : '*désactivées*'}`, { parse_mode: 'Markdown' });
 });
 
 bot.onText(/\/start/, (msg) => {
+  log(`📬 /start de ${msg.from?.username || msg.chat.id}`);
   const menu = `
 🎮 *Tetris Massa Bot* — Menu des commandes
 
@@ -94,6 +108,7 @@ bot.onText(/\/start/, (msg) => {
 });
 
 bot.onText(/\/status/, async (msg) => {
+  log(`📬 /status de ${msg.from?.username || msg.chat.id}`);
   try {
     const result = await client.executeReadOnlyCall({
       target: CONTRACT_ADDRESS,
@@ -110,6 +125,7 @@ bot.onText(/\/status/, async (msg) => {
 });
 
 bot.onText(/\/tops/, async (msg) => {
+  log(`📬 /tops de ${msg.from?.username || msg.chat.id}`);
   try {
     const result = await client.executeReadOnlyCall({
       target: CONTRACT_ADDRESS,
@@ -133,6 +149,7 @@ bot.onText(/\/tops/, async (msg) => {
 });
 
 bot.onText(/\/champion/, async (msg) => {
+  log(`📬 /champion de ${msg.from?.username || msg.chat.id}`);
   try {
     const result = await client.executeReadOnlyCall({
       target: CONTRACT_ADDRESS,
@@ -158,6 +175,7 @@ bot.onText(/\/champion/, async (msg) => {
 });
 
 bot.onText(/\/timeleft/, async (msg) => {
+  log(`📬 /timeleft de ${msg.from?.username || msg.chat.id}`);
   try {
     const result = await client.executeReadOnlyCall({
       target: CONTRACT_ADDRESS,
@@ -176,3 +194,20 @@ bot.onText(/\/timeleft/, async (msg) => {
     bot.sendMessage(msg.chat.id, `❌ Erreur /timeleft : ${err.message}`);
   }
 });
+
+bot.onText(/\/logs/, async (msg) => {
+  try {
+    const content = fs.readFileSync(logFile, 'utf-8');
+    const lines = content.trim().split('\n');
+    const lastLines = lines.slice(-10).join('\n') || '📭 Aucun log disponible.';
+
+    bot.sendMessage(msg.chat.id, `🗒 *Derniers logs :*\n\n\`\`\`\n${lastLines}\n\`\`\``, {
+      parse_mode: 'Markdown',
+    });
+    log(`📤 /logs envoyé à ${msg.from?.username || msg.chat.id}`);
+  } catch (err: any) {
+    bot.sendMessage(msg.chat.id, `❌ Erreur /logs : ${err.message}`);
+    log(`❌ Erreur lors du /logs : ${err.message}`);
+  }
+});
+
